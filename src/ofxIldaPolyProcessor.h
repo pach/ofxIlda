@@ -3,8 +3,15 @@
 //  ofxILDA demo
 //
 //  Created by Memo Akten on 21/05/2013.
+//  Modified by Omer Shapira http://omershapira.com
 //
-//
+
+
+/**
+ * TODO:
+ * * Create a path resampler based on curvature
+ * * Create a polygon connector
+ */
 
 #pragma once
 
@@ -82,5 +89,25 @@ namespace ofxIlda {
                 }
             }
         }
+        
+        //--------------------------------------------------------------
+        /**
+         * Beam sequence planner.
+         * 
+         * FIRST BASIC SOLUTION: Start out at current beam point, look for closest point (in or out)
+         * in a different polygon
+         *
+         * If shape is closed, pick the closest one.
+         * If shape is open, choose the closest point
+         *
+         */
+        void sequenceBeam(vector<Poly> &processedPolys, ofPoint lastPoint, bool lookahead){
+            //Step 1: tag all polylines for "openness"
+            //Step 2: partition the space into nxn
+            //Step 3: find the closest point to lastPoint
+
+        }
+        
     };
-}
+
+}   

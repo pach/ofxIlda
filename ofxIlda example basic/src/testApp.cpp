@@ -4,17 +4,69 @@
 
 //--------------------------------------------------------------
 void testApp::setup(){
+    
+    showHud = true;
+    w = 1.0;//ofGetWidth();
+    h = 1.0;//ofGetHeight();
+    
     ofBackground(0);
     
     etherdream.setup();
-    etherdream.setPPS(30000);
+    etherdream.setPPS(25000);
+    
+    ildaFrame.params.output.doCapX=true;
+    ildaFrame.params.output.doCapY=true;
+    ildaFrame.params.output.blankCount=10;
+    ildaFrame.params.output.endCount=10;
+    ildaFrame.polyProcessor.params.targetPointCount=400;
+    
+    demo = testApp::OSCILLATIONS;
+    
+
+    
+    ///////////
+    
+    
+    if (demo==testApp::DOODLES)
+    {
+        /* Eye */
+        //        poly.arc(ofPoint(w/2.,h/2.), w*0.3, h*0.1, -90, 270, false);
+        //        poly.arc(ofPoint(w/2.,h/2.), w*0.1, h*0.1, 270, -90, false);
+        //        ildaFrame.addPoly(ofxIlda::Poly(poly.getResampledByCount(50)), ofFloatColor(0,1,1,1));
+        
+        /* Triangle */
+        ildaFrame.addPoly(ofFloatColor(0,0,1,1));
+        ildaFrame.getLastPoly().lineTo(ofPoint(0.5,0.0));
+        ildaFrame.getLastPoly().lineTo(ofPoint(0,1));
+        ildaFrame.getLastPoly().lineTo(ofPoint(1,1));
+        ildaFrame.getLastPoly().lineTo(ofPoint(0.5,0.0));
+    } else if (demo==testApp::OSCILLATIONS){
+        //lines
+        //    ildaFrame.addPoly(ofFloatColor(1,1,1,1));
+    }
 }
 
 //--------------------------------------------------------------
 void testApp::update(){
+    if (demo==OSCILLATIONS){
+        ildaFrame.getPolys().clear();
+        ildaFrame.addPoly(ofFloatColor(
+                                       (int)ofGetElapsedTimef()%3,
+                                       (int)ofGetElapsedTimef()%5,
+                                       (int)ofGetElapsedTimef()%7,
+                                       1));
+        
+        ofxIlda::Poly& p = ildaFrame.getLastPoly();
+        p.clear();
+        
+        for (int i = 0 ; i < 30 ; i ++){
+            float t = (ofGetElapsedTimef() + i*10.0);
+            float scale = sqrt(abs(sin(ofGetElapsedTimef())));
+            ofPoint pnt = (ofPoint(0.5,0.5) + scale * ofPoint(0.5*cos(t*1.1), 0.5*sin(t)));
+            p.lineTo(pnt);
+        }
+    }
 }
-
-
 
 //--------------------------------------------------------------
 void testApp::draw() {
@@ -28,7 +80,12 @@ void testApp::draw() {
     etherdream.setPoints(ildaFrame);
     
     ofSetColor(255);
-    ofDrawBitmapString(ildaFrame.getString(), 10, 30);
+    //    poly.draw();
+    //    poly.getResampledByCount(2).draw();
+    ildaFrame.params;
+    
+    if (showHud) ofDrawBitmapString(ildaFrame.getString(), 10, 30);
+    
 }
 
 //--------------------------------------------------------------
@@ -46,12 +103,12 @@ void testApp::keyPressed(int key){
             ildaFrame.addPoly(p);
         }
             break;
-
+            
             // change color
         case 'R': ildaFrame.params.output.color.r = 1 - ildaFrame.params.output.color.r; break;
         case 'G': ildaFrame.params.output.color.g = 1 - ildaFrame.params.output.color.g; break;
         case 'B': ildaFrame.params.output.color.b = 1 - ildaFrame.params.output.color.b; break;
-
+            
             // toggle draw lines (on screen only)
         case 'l': ildaFrame.params.draw.lines ^= true; break;
             
@@ -64,7 +121,7 @@ void testApp::keyPressed(int key){
             // adjust point count
         case '.': ildaFrame.polyProcessor.params.targetPointCount++; break;
         case ',': if(ildaFrame.polyProcessor.params.targetPointCount > 10) ildaFrame.polyProcessor.params.targetPointCount--; break;
-
+            
             // adjust point count quicker
         case '>': ildaFrame.polyProcessor.params.targetPointCount += 10; break;
         case '<': if(ildaFrame.polyProcessor.params.targetPointCount > 20) ildaFrame.polyProcessor.params.targetPointCount -= 10; break;
@@ -72,11 +129,11 @@ void testApp::keyPressed(int key){
             // flip image
         case 'x': ildaFrame.params.output.transform.doFlipX ^= true; break;
         case 'y': ildaFrame.params.output.transform.doFlipY ^= true; break;
-
+            
             // cap image
         case 'X': ildaFrame.params.output.doCapX ^= true; break;
         case 'Y': ildaFrame.params.output.doCapY ^= true; break;
-
+            
             // move output around
         case OF_KEY_UP: ildaFrame.params.output.transform.offset.y -= 0.05; break;
         case OF_KEY_DOWN: ildaFrame.params.output.transform.offset.y += 0.05; break;
@@ -90,6 +147,13 @@ void testApp::keyPressed(int key){
         case 'd': ildaFrame.params.output.transform.scale.x += 0.05; break;
             
         case 'C': ildaFrame.drawCalibration(); break;
+            
+        case '1': ildaFrame.params.output.blankCount-=2; break;
+        case '2': ildaFrame.params.output.blankCount+=2; break;
+        case '3': ildaFrame.params.output.endCount-=2; break;
+        case '4': ildaFrame.params.output.endCount+=2; break;
+            
+        case '|': showHud ^= showHud;
     }
 }
 
