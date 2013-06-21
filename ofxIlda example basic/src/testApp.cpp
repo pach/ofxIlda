@@ -10,7 +10,7 @@ void testApp::setup(){
     h = 1.0;//ofGetHeight();
     
     ofBackground(0);
-    
+    //    ofSetFrameRate(30);
     etherdream.setup();
     etherdream.setPPS(25000);
     
@@ -18,55 +18,92 @@ void testApp::setup(){
     ildaFrame.params.output.doCapY=true;
     ildaFrame.params.output.blankCount=10;
     ildaFrame.params.output.endCount=10;
+    
     ildaFrame.polyProcessor.params.targetPointCount=400;
+    //    ildaFrame.polyProcessor.params.optimizeTolerance = 0.2;
     
     demo = testApp::OSCILLATIONS;
     
-
     
     ///////////
     
-    
-    if (demo==testApp::DOODLES)
-    {
-        /* Eye */
-        //        poly.arc(ofPoint(w/2.,h/2.), w*0.3, h*0.1, -90, 270, false);
-        //        poly.arc(ofPoint(w/2.,h/2.), w*0.1, h*0.1, 270, -90, false);
-        //        ildaFrame.addPoly(ofxIlda::Poly(poly.getResampledByCount(50)), ofFloatColor(0,1,1,1));
+    switch (demo) {
+        case DOODLES:{
+            
+            
+            break;
+        }
+        case OSCILLATIONS:{
         
-        /* Triangle */
-        ildaFrame.addPoly(ofFloatColor(0,0,1,1));
-        ildaFrame.getLastPoly().lineTo(ofPoint(0.5,0.0));
-        ildaFrame.getLastPoly().lineTo(ofPoint(0,1));
-        ildaFrame.getLastPoly().lineTo(ofPoint(1,1));
-        ildaFrame.getLastPoly().lineTo(ofPoint(0.5,0.0));
-    } else if (demo==testApp::OSCILLATIONS){
-        //lines
-        //    ildaFrame.addPoly(ofFloatColor(1,1,1,1));
+            break;
+        }
+        case TEXT:{
+            
+            break;
+        }
+        case NONE:{
+            ildaFrame.getPolys().clear();
+            break;
+        }
+            
+        default:
+            break;
     }
 }
 
 //--------------------------------------------------------------
 void testApp::update(){
-    if (demo==OSCILLATIONS){
-        ildaFrame.getPolys().clear();
-        ildaFrame.addPoly(ofFloatColor(
-                                       (int)ofGetElapsedTimef()%3,
-                                       (int)ofGetElapsedTimef()%5,
-                                       (int)ofGetElapsedTimef()%7,
-                                       1));
-        
-        ofxIlda::Poly& p = ildaFrame.getLastPoly();
-        p.clear();
-        
-        for (int i = 0 ; i < 30 ; i ++){
-            float t = (ofGetElapsedTimef() + i*10.0);
-            float scale = sqrt(abs(sin(ofGetElapsedTimef())));
-            ofPoint pnt = (ofPoint(0.5,0.5) + scale * ofPoint(0.5*cos(t*1.1), 0.5*sin(t)));
-            p.lineTo(pnt);
+    switch (demo) {
+        case OSCILLATIONS:{
+            ildaFrame.getPolys().clear();
+            ildaFrame.addPoly(ofFloatColor(
+                                           (int)ofGetElapsedTimef()%3,
+                                           (int)ofGetElapsedTimef()%5,
+                                           (int)ofGetElapsedTimef()%7,
+                                           1));
+            ofxIlda::Poly& p = ildaFrame.getLastPoly();
+            p.clear();
+            for (int i = 0 ; i < 35 ; i ++){
+                float t = (ofGetElapsedTimef() + i * 0.5);
+                float scale = sqrt(abs(sin(ofGetElapsedTimef())));
+                ofPoint pnt = (ofPoint(0.5,0.5) + scale * ofPoint(0.5*cos(t*1.1), 0.5*sin(t)));
+                p.lineTo(pnt);
+            }
+            break;
         }
+        case MILKYWAY:{
+            ildaFrame.getPolys().clear();
+            ildaFrame.addPoly(ofFloatColor(
+                                           (int)ofGetElapsedTimef()%11,
+                                           (int)ofGetElapsedTimef()%5,
+                                           (int)ofGetElapsedTimef()%7,
+                                           1));
+            
+            ofxIlda::Poly& q = ildaFrame.getLastPoly();
+            q.clear();
+            
+            for (int i = 0 ; i < 150 ; i ++){
+                float t = (ofGetElapsedTimef() + i*0.5);
+                float scale  = sqrt(i/150.0);
+                ofPoint pnt = (ofPoint(0.5,0.5) + scale * ofPoint(0.5*cos(t*1.1), 0.5*sin(t)));
+                q.lineTo(pnt);
+            }
+            
+            break;
+        }
+        default:
+            ildaFrame.clear();
+            break;
     }
+    
+//    drawSomething(EYE, ofPoint(0.5,0.5), 0.2, ofFloatColor(0,1,1,1));
+    
+    drawSomething(TRIANGLE, ofPoint(0.5,0.5), 0.05*(sqrt(ofGetSystemTime()%53)), ofFloatColor(1,0,0,1));
+    drawSomething(TRIANGLE, ofPoint(0.5,0.5), 0.05*(sqrt(ofGetSystemTime()%73)), ofFloatColor(0,0,1,1));
+    drawSomething(TRIANGLE, ofPoint(0.5,0.5), 0.05*(sqrt(ofGetSystemTime()%101)), ofFloatColor(1,1,0,1));
+
 }
+
 
 //--------------------------------------------------------------
 void testApp::draw() {
@@ -167,4 +204,32 @@ void testApp::mouseDragged(int x, int y, int button){
 void testApp::mousePressed(int x, int y, int button){
     // create a new poly in the ILDA frame
     ildaFrame.addPoly();
+}
+
+void testApp::drawSomething(doodle d, ofPoint center, float scale, ofFloatColor c){
+    switch (d) {
+        case EYE:{
+            ofxIlda::Poly p1, p2;
+            p1.arc(center, scale, 0.2*scale, -90, 270, true, 10);
+            p1.arc(center, scale*0.2, scale*0.2, -90,270,true,8);
+            p2.arc(center, scale*0.01, scale*0.01, 0,360,true,2);
+            ildaFrame.addPoly(p1, c);
+            ildaFrame.addPoly(p2, c);
+        }
+            
+            break;
+        case TRIANGLE:{
+            /* Triangle */
+            ofxIlda::Poly p;            
+            p.lineTo(center + scale * ofPoint(0.0,-0.5));
+            p.lineTo(center + scale * ofPoint(-0.5,0.5));
+            p.lineTo(center + scale * ofPoint(0.5,0.5));
+            p.lineTo(center + scale * ofPoint(0.0,-0.5));
+            ildaFrame.addPoly(p,c);
+        }
+            
+            break;
+        default:
+            break;
+    }
 }
