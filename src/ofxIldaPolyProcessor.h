@@ -28,6 +28,11 @@ namespace ofxIlda {
             float spacing;  // desired spacing between points. Set automatically by targetPointCount, or set manually. (zero to ignore)
         } params;
         
+        struct {
+            float angleWeight; //How much weight to give to the change of angle at the beginning/end of a line
+            float distanceWeight; //How much weight to give to a distance between one line end and another beginning
+        } optimizationParams;
+        
         
         //--------------------------------------------------------------
         PolyProcessor() {
@@ -106,6 +111,17 @@ namespace ofxIlda {
             //Step 2: partition the space into nxn
             //Step 3: find the closest point to lastPoint
 
+        }
+        
+        float cost(Poly l1, bool flipL1, Poly l2, bool flipL2){
+            float c = 0;
+            //FIXME: Assumes normalized. Add cases for normalized vs non-normalized
+            ofPoint p1 = flipL1? l1.getHead() : l1.getTail();
+            ofPoint p2 = flipL2? l2.getTail() : l2.getHead();
+            c += p1.distance(p2) * optimizationParams.distanceWeight;
+            //TODO: implement angle weight with dot products
+            
+            return c;
         }
         
     };
