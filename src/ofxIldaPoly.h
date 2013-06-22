@@ -3,7 +3,7 @@
 //  interactivelaser
 //
 //  Created by 武内 満 on 2013/06/02.
-//
+//  Modified later by Omer Shapira.
 //
 
 #pragma once
@@ -15,7 +15,7 @@ namespace ofxIlda {
 	class Poly: public ofPolyline{
     private:
         ofVec2f headDirection, tailDirection;
-        bool reversed;
+        bool reversed, directionChanged;
         
         /**
          * Returns the current head or tail, according to the direction (reversed param)
@@ -41,14 +41,16 @@ namespace ofxIlda {
             bool order = head && (!reversed);
             if (order){
                 //return head
-                if (hasChanged() /* TODO: or is empty */){
+                if (hasChanged() || directionChanged /* TODO: or is empty */){
                     headDirection = *(getVertices().begin() + 1) - *getVertices().begin();
+                    directionChanged = false;
                 }
                 return headDirection;
             } else {
-                if (hasChanged() /* TODO: or is empty */){
+                if (hasChanged() || directionChanged /* TODO: or is empty */){
                     tailDirection=(ofVec2f) (*(getVertices().end() - 1) - *(getVertices().end() - 2));
                     tailDirection.normalize();
+                    directionChanged = false;
                 }
                 return tailDirection;
             }
@@ -92,7 +94,10 @@ namespace ofxIlda {
         }
         
         bool const isReversed(){ return reversed; }
-        void reverse(){ reversed^=reversed; }
+        void reverse(){
+            reversed^=reversed;
+            directionChanged = true;
+        }
         
         const ofVec2f& getHeadDirection(){
             return getEndDirection(true);
