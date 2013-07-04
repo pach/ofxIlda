@@ -1,10 +1,14 @@
-//
-//  ofxIldaPoly.h
-//  interactivelaser
-//
-//  Created by 武内 満 on 2013/06/02.
-//  Modified later by Omer Shapira.
-//
+/*
+ * ofxIldaPoly.h
+ * =============
+ * Created by 武内 満 on 2013/06/02
+ * Modified by Omer Shapira.
+ *
+ * An encapsulation of ofPolyline with extra features.
+ * has a reverse() function if directionality is needed.
+ *
+ */
+
 
 #pragma once
 
@@ -56,6 +60,9 @@ namespace ofxIlda {
             }
         }
         
+        void applyMatrix(ofMatrix4x4& m){
+            //TODO: Make this
+        }
         
 	public:
 
@@ -63,7 +70,7 @@ namespace ofxIlda {
         
         /* Constructors */
         
-		Poly() : color(ofFloatColor(1, 1, 1, 1)), reversed(false) {}
+        Poly(): color(ofFloatColor(1, 1, 1, 1)), reversed(false) {}
         
         Poly(ofFloatColor color) : color(color), reversed(false) {}
         
@@ -108,6 +115,27 @@ namespace ofxIlda {
         }
         
         /* Mutators */
+        
+        void scale(ofVec2f& scaleBy){
+            //TODO: Make this using applyMatrix
+        }
+        
+        void translate(ofVec2f& moveBy){
+            //TODO: Make this using applyMatrix
+        }
+        
+        /**
+         * Changes the max dimension to 1.0, and moves the centroid to 0.5,0.5.
+         */
+        
+        void normalise(){
+            //TODO: Change to use applyMatrix
+            ofRectangle boundingBox = getBoundingBox();
+            ofVec2f wh = ofVec2f(boundingBox.getWidth(), boundingBox.getHeight());
+            scale(wh);
+            ofVec2f moveBy = ofVec2f(0.5,0.5) - getCentroid2D();
+            translate(moveBy);
+        }
         
         void conformDirection() {
             if (reversed){
