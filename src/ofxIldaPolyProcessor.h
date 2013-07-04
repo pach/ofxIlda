@@ -65,8 +65,7 @@ namespace ofxIlda {
             float totalLength = 0;
             vector<int> pathLengths;
             processedPolys = origPolys;
-            //first pass: sort polys
-            sequenceBeam(processedPolys, false);
+            
             for(int i=0; i<processedPolys.size(); i++) {
                 if(processedPolys[i].size()) {
                     //reverse if necessary
@@ -104,6 +103,7 @@ namespace ofxIlda {
                     processedPolys[i].setFromPolyline(processedPolys[i].getResampledBySpacing(params.spacing));
                 }
             }
+            sequenceBeam(processedPolys, false);
         }
         
         //--------------------------------------------------------------
@@ -126,7 +126,7 @@ namespace ofxIlda {
                 
                 for (int i = 0; i < polys.size(); i++) {
                     float minCost = INFINITY;
-                    float indexShift = 0;
+                    int indexShift = 0;
                     for (int j = 1; i + j < polys.size(); j++) {
                         float c = cost(polys[i], polys[i+j], false);
                         //If the head is closer, mark it
@@ -143,7 +143,10 @@ namespace ofxIlda {
                         }
                     }
                     //found the closest one? bring it to the front
-                    std::iter_swap(polys.begin() + i + 1, polys.begin() + i + indexShift);
+                    if (indexShift>0){
+                        //TODO: go over the math again.
+                        std::iter_swap(polys.begin() + i + 1, polys.begin() + i + indexShift);
+                    }
                 }
                 //remove convenience point
                 polys.erase(polys.begin());
