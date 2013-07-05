@@ -116,12 +116,33 @@ namespace ofxIlda {
         
         /* Mutators */
         
-        void scale(ofVec2f& scaleBy){
-            //TODO: Make this using applyMatrix
+        void scaleAboutOrigin(const float scaleBy){
+            ofPoint origin = ofPoint(0,0,0);
+            scaleAboutPoint(scaleBy, origin);
+        }
+
+        void scaleAboutPoint(const float scaleBy, ofPoint& point){
+            //TODO: Implement this with a matrix
+            std::vector<ofPoint>& pts = getVertices();
+            for (std::vector<ofPoint>::iterator pt = pts.begin(); pt != pts.end(); ++pt)
+            {
+                //TODO: check your math
+                //move to origin
+                (*pt) = (*pt) - point;
+                //scale about origin
+                pt->scale(scaleBy);
+                //move back
+                (*pt) = (*pt) + point;
+            }
         }
         
-        void translate(ofVec2f& moveBy){
+        void translate(ofPoint& moveBy){
             //TODO: Make this using applyMatrix
+            std::vector<ofPoint>& pts = getVertices();
+            for (std::vector<ofPoint>::iterator pt = pts.begin(); pt != pts.end(); ++pt)
+            {
+                (*pt) = (*pt) + moveBy;
+            }
         }
         
         /**
@@ -131,9 +152,10 @@ namespace ofxIlda {
         void normalise(){
             //TODO: Change to use applyMatrix
             ofRectangle boundingBox = getBoundingBox();
-            ofVec2f wh = ofVec2f(boundingBox.getWidth(), boundingBox.getHeight());
-            scale(wh);
-            ofVec2f moveBy = ofVec2f(0.5,0.5) - getCentroid2D();
+            float corner = MAX(boundingBox.getWidth(), boundingBox.getHeight());
+            ofPoint centroid = getCentroid2D();
+            scaleAboutPoint(1.0/corner, centroid);
+            ofPoint moveBy = ofPoint(0.5,0.5,0) - centroid;
             translate(moveBy);
         }
         
