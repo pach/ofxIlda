@@ -35,6 +35,7 @@ namespace ofxIlda {
                 int endCount;       // how many end repeats to send
                 bool doCapX;        // cap out of range on x (otherwise wraps around)
                 bool doCapY;        // cap out of range on y (otherwise wraps around)
+                int minimumPointCount;
                 struct {
                     bool doFlipX;
                     bool doFlipY;
@@ -71,6 +72,7 @@ namespace ofxIlda {
             params.output.endCount = 30;
             params.output.doCapX = false;
             params.output.doCapY = false;
+            params.output.minimumPointCount = 1000;
             
             params.output.transform.doFlipX = false;
             params.output.transform.doFlipY = false;
@@ -353,6 +355,10 @@ namespace ofxIlda {
                     }
                     
                 }
+            }
+            // ajoute des points vide si le compte de points est inférieur au minimum
+            while (points.size()<params.output.minimumPointCount){
+                points.push_back(Point(ofPoint(0.5, 0.5), ofFloatColor(0., 0., 0., 0.)));
             }
         }
         

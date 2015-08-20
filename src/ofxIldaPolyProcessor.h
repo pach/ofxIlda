@@ -26,6 +26,7 @@ namespace ofxIlda {
             bool collapse;  // (not implemented yet)
             int targetPointCount;   // how many points in total should ALL paths in this frame be resampled to (zero to ignore)
             float spacing;  // desired spacing between points. Set automatically by targetPointCount, or set manually. (zero to ignore)
+            bool doSpacing;
         } params;
         
         struct {
@@ -42,6 +43,7 @@ namespace ofxIlda {
             params.collapse = 0;
             params.targetPointCount = 500;
             params.spacing = 0;
+            params.doSpacing = true;
             
             //TODO: Acutally balance between the two when they're both implemented
             optimizationParams.angleWeight = 0;
@@ -92,13 +94,13 @@ namespace ofxIlda {
             
             
             // calculate spacing based on desired total number of points
-            if(params.targetPointCount > 0 && totalLength > 0) {
+            if(params.targetPointCount) {
                 params.spacing = totalLength / params.targetPointCount;
             }
             
             
             // resample paths based on spacing (either as calculated by targetPointCount, or set by user)
-            if(params.spacing) {
+            if(params.doSpacing && params.spacing) {
                 for(int i=0; i<processedPolys.size(); i++) {
                     processedPolys[i].setFromPolyline(processedPolys[i].getResampledBySpacing(params.spacing));
                 }
